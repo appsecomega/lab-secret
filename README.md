@@ -27,10 +27,10 @@ The lab includes:
 ---
 
 ## 📋 Requirements
-- [Docker](https://docs.docker.com/get-docker/ ) + Docker Compose
-- [Python 3.12+](https://www.python.org/downloads/ )
-- [Git](https://git-scm.com/downloads )
-- Optional: [age](https://github.com/FiloSottile/age ) and [SOPS](https://github.com/getsops/sops )
+- [Docker](https://docs.docker.com/get-docker/) + Docker Compose
+- [Python 3.12+](https://www.python.org/downloads/)
+- [Git](https://git-scm.com/downloads)
+- Optional: [age](https://github.com/FiloSottile/age) and [SOPS](https://github.com/getsops/sops)
 
 ---
 
@@ -78,13 +78,17 @@ touch $PROJECT_NAME/secrets/README.md
 touch $PROJECT_NAME/README.md
 
 echo "[✓] Empty structure created."
+```
 Run:
-Bash
+```bash
 chmod +x create_lab_structure.sh
 ./create_lab_structure.sh
-B) Script: Fully Populated Lab (create_local_lab.sh)
+```
+
+### **B) Script: Fully Populated Lab (`create_local_lab.sh`)**
 Use this if you want the ready-to-run local lab with FastAPI, Vault, PostgreSQL, secrets, and all configs populated.
-Bash
+
+```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -206,7 +210,7 @@ services:
       echo 'path \"secret/data/app/*\" { capabilities = [\"read\"] }' > /tmp/app-read.hcl &&
       vault policy write app-read /tmp/app-read.hcl &&
       vault auth enable approle || true &&
-      ROLE_ID=$(vault write -f -format=json auth/approle/role/app-role policies='app-read' token_ttl='30m' token_max_ttl='2h' secret_id_ttl='30m' | jq -r '.data.role_id' ) &&
+      ROLE_ID=$(vault write -f -format=json auth/approle/role/app-role policies='app-read' token_ttl='30m' token_max_ttl='2h' secret_id_ttl='30m' | jq -r '.data.role_id') &&
       SECRET_ID=$(vault write -f -format=json auth/approle/role/app-role/secret-id | jq -r '.data.secret_id') &&
       echo 'ROLE_ID=' $ROLE_ID &&
       echo 'SECRET_ID=' $SECRET_ID &&
@@ -297,20 +301,40 @@ docker compose -f ops/docker-compose.dev.yml up -d
 EOF
 
 echo "[✓] Local lab created successfully."
+```
 Run:
-Bash
+```bash
 chmod +x create_local_lab.sh
 ./create_local_lab.sh
-🚀 2. Running the Lab
-After running create_local_lab.sh:
-Bash
+```
+
+---
+## 🚀 2. Running the Lab
+After running `create_local_lab.sh`:
+```bash
 cd fictitious-app
 docker compose -f ops/docker-compose.dev.yml up -d
+```
 API → http://127.0.0.1:8000
-Vault → http://127.0.0.1:8200 (token: root )
-🧪 3. Testing
-Bash
+
+Vault → http://127.0.0.1:8200 (token: `root`)
+
+---
+## 🧪 3. Testing
+```bash
 curl http://127.0.0.1:8000/health
+```
 Expected:
-JSON
+```json
 {"ok": true}
+```
+
+---
+## 🎓 4. Classroom Exercises
+- Rotate secrets in Vault and redeploy
+- Commit a fake `.env` file and detect it with Gitleaks
+- Create a new secret in Vault and use it in the API
+- Restrict Vault policies and see failure
+- Add SOPS encryption for configs
+
+
